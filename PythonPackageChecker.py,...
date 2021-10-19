@@ -1,0 +1,52 @@
+from subprocess import Popen, PIPE
+
+class PythonPackageChecker:
+    def __init__(self):
+        self.packages = {}
+        self.get_packages()
+
+    def get_packages(self):
+        """
+        Gets packages from pip3 using subprocess
+
+        Returns a dictionary of packages currently installed where the key is the package name, and the value is the version number
+        """
+        shell_command = "pip3 list"
+        capture = Popen(shell_command, stdout=PIPE, shell=True)
+        std_out, std_err = capture.communicate()
+        return_code = capture.returncode
+        if return_code != 0:
+            raise Exception(f"The command '{shell_command}' exited with a return_code of '{return_code}'")
+
+        command_output = std_out.decode()
+
+        for line in command_output.split("\n"):
+            if " " not in line:
+                continue
+            line_list = line.split()
+            package = line_list[0].lower() # pip packages are case insensitive, so always make them lowercase for easy comparison
+            if package == "package" or package == "--------------------":
+                print(f"Skipping the package '{package}' because it is a header.")
+                continue
+            package_version = line_list[1]
+            self.packages[package] = package_version
+        return self.packages
+
+    def get_missing_packages(self, list_of_packages_to_check):
+        """
+        Checks each package in list_of_packages_to_check against the list of currently installed packages (self.packages)
+
+        Returns a list of missing packages
+        """
+        list_of_packages_to_check_type = type(list_of_packages_to_check)
+        if list_of_packages_to_check_type != list:
+            raise Exception(f"get_missing_packages() expects a list, but instead received '{list_of_packages_to_check_type}'")
+        if len(self.packages) == 0:
+            raise Exception(f"Unable to run check_packages() because self.packages is empty")
+
+        missing_packages = []
+        for package in list_of_packages_to_check:
+            package = package.lower() # pip packages are case insensitive, so always make them lowercase for easy comparison
+            if package not in self.packages:
+                missing_packages.append(package)
+        return missing_packages
