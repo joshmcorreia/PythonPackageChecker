@@ -19,6 +19,8 @@ class PythonPackageChecker:
         if isinstance(std_out, bytes):
             std_out = std_out.decode()
         return_code = capture.returncode
+        if return_code == 127: # bash returns 127 on not-found errors
+            raise SystemError("pip3 does not seem to be installed. Please install it and try again.")
         if return_code != 0:
             raise Exception(f"The command '{shell_command}' exited with a return_code of '{return_code}' and an exit message of '{std_err}'")
 
