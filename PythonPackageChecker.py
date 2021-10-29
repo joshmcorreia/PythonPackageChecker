@@ -26,12 +26,12 @@ class PythonPackageChecker:
             if " " not in line:
                 continue
             line_list = line.split()
-            package = line_list[0].lower() # pip packages are case insensitive, so always make them lowercase for easy comparison
-            if package == "package" or package == "--------------------":
-                print(f"Skipping the package '{package}' because it is a header.")
+            package_name = line_list[0].lower() # pip packages are case insensitive, so always make them lowercase for easy comparison
+            if package_name == "package" or (package_name.count("-") == len(package_name)): # skip packages where the package name is only hyphens because this indicates a header
+                print(f"Skipping the package '{package_name}' because it is a header.")
                 continue
             package_version = line_list[1]
-            self.packages[package] = package_version
+            self.packages[package_name] = package_version
         return self.packages
 
     def get_missing_packages(self, list_of_packages_to_check):
