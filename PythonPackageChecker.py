@@ -14,9 +14,9 @@ class PythonPackageChecker:
         shell_command = "pip3 list"
         capture = Popen(shell_command, stdout=PIPE, stderr=PIPE, shell=True)
         std_out, std_err = capture.communicate()
-        if type(std_err) is bytes:
+        if isinstance(std_err, bytes):
             std_err = std_err.decode()
-        if type(std_out) is bytes:
+        if isinstance(std_out, bytes):
             std_out = std_out.decode()
         return_code = capture.returncode
         if return_code != 0:
@@ -38,13 +38,13 @@ class PythonPackageChecker:
         """
         Checks each package in list_of_packages_to_check against the list of currently installed packages (self.packages)
 
-        Returns a list of missing packages
+        Returns a list of missing packages, which has length 0 if there are no missing packages
         """
         list_of_packages_to_check_type = type(list_of_packages_to_check)
         if list_of_packages_to_check_type != list:
-            raise Exception(f"get_missing_packages() expects a list, but instead received '{list_of_packages_to_check_type}'")
+            raise TypeError(f"get_missing_packages() expects a list, but instead received '{list_of_packages_to_check_type}'")
         if len(self.packages) == 0:
-            raise Exception(f"Unable to run check_packages() because self.packages is empty")
+            raise ValueError(f"Unable to run check_packages() because self.packages is empty")
 
         missing_packages = []
         for package in list_of_packages_to_check:
