@@ -23,7 +23,7 @@ class PythonPackageChecker:
             raise Exception(f"The command '{shell_command}' exited with a return_code of '{return_code}' and an exit message of '{std_err}'")
 
         for line in std_out.split("\n"):
-            if " " not in line:
+            if " " not in line: # skip lines without spaces because we can't use .split() on them
                 continue
             line_list = line.split()
             package_name = line_list[0].lower() # pip packages are case insensitive, so always make them lowercase for easy comparison
