@@ -15,9 +15,9 @@ class PythonPackageChecker:
         capture = Popen(shell_command, stdout=PIPE, stderr=PIPE, shell=True)
         std_out, std_err = capture.communicate()
         if isinstance(std_err, bytes):
-            std_err = std_err.decode()
+            std_err = std_err.decode().rstrip()
         if isinstance(std_out, bytes):
-            std_out = std_out.decode()
+            std_out = std_out.decode().rstrip()
         return_code = capture.returncode
         if return_code == 127: # bash returns 127 on not-found errors
             raise SystemError("pip3 does not seem to be installed. Please install it and try again.")
